@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>門號折扣 - 武佶電訊</title>
+  <style>
+    body { font-family: 'Helvetica Neue', sans-serif; margin: 0; padding: 0; background: #fff; }
+    
+    .header { 
+      background: #d00000; 
+      color: white; 
+      padding: 10px 20px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      flex-wrap: wrap; /* 讓導覽列在小螢幕自動換行 */
+    }
+    .header h1 {
+        display: flex;
+        align-items: center;
+        font-size: 20px;
+        margin: 0;
+    }
+    .header img { height: 32px; margin-right: 10px; }
+    .header .nav { 
+        display: flex; 
+        gap: 20px; 
+        font-weight: bold; 
+        flex-wrap: wrap; /* 讓導覽連結在小螢幕自動換行 */
+        justify-content: center;
+        margin-top: 10px;
+    }
+    .header .nav a { color: white; text-decoration: none; font-size: 16px; }
+
+    .tab-bar { 
+      display: flex; 
+      flex-wrap: wrap; /* 讓選項在小螢幕自動換行 */
+      padding: 10px 20px; 
+      background: #fff; 
+      align-items: center; 
+      gap: 15px; 
+      border-bottom: 2px solid #eee;
+    }
+    .tab, .carrier { 
+      padding: 10px 16px; 
+      cursor: pointer; 
+      font-weight: bold; 
+      color: #666; 
+      border-radius: 20px;
+      white-space: nowrap; /* 防止文字換行 */
+    }
+    .tab.active { background: #ffe600; color: black; }
+    .carrier.active { background: #d00000; color: white; }
+
+    /* 確保只有 active 的 tab-content 才顯示 */
+    .tab-content { display: none; padding: 20px; max-width: 1000px; margin: auto; }
+    .tab-content.active { display: block; }
+
+    /* carrier-content 預設隱藏，只顯示選中的 */
+    .carrier-content { display: none; }
+
+    /* 寬螢幕下的表格樣式 (電腦版) */
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th { background-color: #d00000; color: white; padding: 10px; text-align: left; }
+    td { padding: 10px; border: 1px solid #ccc; text-align: left; font-size: 14px; }
+    .subtitle { font-weight: bold; font-size: 18px; margin-top: 30px; color: #d00000; }
+
+    /* --- 響應式 CSS (手機版) --- */
+    @media (max-width: 768px) {
+      .header { flex-direction: column; text-align: center; }
+      .header .nav { flex-direction: column; gap: 5px; margin-top: 15px; }
+      .tab-bar { flex-wrap: wrap; justify-content: center; }
+
+      /* 將表格轉換為直向的卡片樣式 */
+      table { border: 0; }
+      thead { display: none; } /* 在手機上隱藏表頭 */
+      tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      td {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 10px;
+        border-bottom: 1px solid #eee;
+      }
+      td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #555;
+        min-width: 80px;
+      }
+      td:first-of-type { border-top-left-radius: 5px; border-top-right-radius: 5px; }
+      td:last-of-type { border-bottom: 0; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1 style="font-size: 20px; margin: 0;">
+        <img src="logo.png" alt="Logo">
+        武佶電訊
+    </h1>
+    <div class="nav">
+      <a href="index.html">首頁</a>
+      <a href="price.html">手機價格</a>
+      <a href="discount.html">門號折扣</a>
+      <a href="insurance.html">手機保險</a>
+      <a href="repair.html">手機維修</a>
+      <a href="3dprint.html">3D列印服務</a>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="carrier active" onclick="switchCarrier('chunghwa')">中華電信</div>
+    <div class="carrier" onclick="switchCarrier('taiwanmobile')">台灣大哥大</div>
+    <div class="carrier" onclick="switchCarrier('fareastone')">遠傳電信</div>
+
+    <div style="width: 30px;"></div> 
+    <div class="tab active" onclick="switchTab(0)">攜碼</div>
+    <div class="tab" onclick="switchTab(1)">新辦</div>
+    <div class="tab" onclick="switchTab(2)">續約</div>
+  </div>
+
+  <div id="chunghwa" class="carrier-content">
+    <div class="tab-content active">
+      <div class="subtitle">中華電信 4G 門號方案</div>
+      <table>
+        <thead>
+          <tr><th>方案</th><th>月租費</th><th>預繳</th><th>傳輸量</th><th>方案內容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="方案">699(30)</td><td data-label="月租費">699</td><td data-label="預繳">3500</td><td data-label="傳輸量">吃到飽</td><td data-label="方案內容">網內每通前10分鐘免費｜網內45分鐘｜網外40分鐘｜市話15分鐘</td></tr>
+          <tr><td data-label="方案">398(30)</td><td data-label="月租費">398</td><td data-label="預繳">1200</td><td data-label="傳輸量">6GB</td><td data-label="方案內容">網內免費｜網外20分鐘｜市話10分鐘</td></tr>
+          <tr><td data-label="方案">199(36)</td><td data-label="月租費">199</td><td data-label="預繳">1500</td><td data-label="傳輸量">1GB</td><td data-label="方案內容">網內20分鐘｜網外+市話共20分鐘</td></tr>
+        </tbody>
+      </table>
+
+      <div class="subtitle">中華電信 5G 門號方案</div>
+      <table>
+        <thead>
+          <tr><th>方案</th><th>月租費</th><th>預繳</th><th>傳輸量</th><th>熱點分享</th><th>方案內容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="方案">599(24)</td><td data-label="月租費">599</td><td data-label="預繳">3000</td><td data-label="傳輸量">24GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前24G吃到飽不降速(含併熱點) 後降速4G低速吃到飽｜網內前5分鐘免費｜網外30分鐘｜市話40分鐘</td></tr>
+          <tr><td data-label="方案">599(30)</td><td data-label="月租費">599</td><td data-label="預繳">4600</td><td data-label="傳輸量">24GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前24G吃到飽不降速(含併熱點) 後降速4G低速吃到飽｜網內前5分鐘免費｜網外30分鐘｜市話40分鐘</td></tr>
+          <tr><td data-label="方案">799(24)</td><td data-label="月租費">799</td><td data-label="預繳">4800</td><td data-label="傳輸量">36GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前36G吃到飽不降速(含併熱點) 後降速4G低速吃到飽｜網內10分鐘免費｜網外45分鐘｜市話60分鐘</td></tr>
+          <tr><td data-label="方案">799(30)</td><td data-label="月租費">799</td><td data-label="預繳">6900</td><td data-label="傳輸量">36GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前36G吃到飽不降速(含併熱點) 後降速4G低速吃到飽｜網內10分鐘免費｜網外45分鐘｜市話60分鐘</td></tr>
+          <tr><td data-label="方案">999(24)</td><td data-label="月租費">999</td><td data-label="預繳">6500</td><td data-label="傳輸量">60GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前60G吃到飽不降速(含併熱點)，熱點量到10M)後降速｜網內60分鐘｜網外60分鐘｜市話75分鐘</td></tr>
+          <tr><td data-label="方案">999(30)</td><td data-label="月租費">999</td><td data-label="預繳">9700</td><td data-label="傳輸量">60GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前60G吃到飽不降速(含併熱點)，熱點量到10M)後降速｜網內60分鐘｜網外60分鐘｜市話75分鐘</td></tr>
+          <tr><td data-label="方案">1199(24)</td><td data-label="月租費">1199</td><td data-label="預繳">9300</td><td data-label="傳輸量">100GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前100G吃到飽不降速(含併熱點)，熱點量到10M)後降速｜網內免費｜網外80分鐘｜市話100分鐘</td></tr>
+          <tr><td data-label="方案">1199(30)</td><td data-label="月租費">1199</td><td data-label="預繳">11700</td><td data-label="傳輸量">100GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前100G吃到飽不降速(含併熱點)，熱點量到10M)後降速｜網內免費｜網外80分鐘｜市話100分鐘</td></tr>
+          <tr><td data-label="方案">1399(24)</td><td data-label="月租費">1399</td><td data-label="預繳">10200</td><td data-label="傳輸量">吃到飽</td><td data-label="熱點分享">50GB</td><td data-label="方案內容">上網吃到飽不降速(熱點250G，量到降10M)｜網內110分鐘｜市話140分鐘</td></tr>
+          <tr><td data-label="方案">1399(30)</td><td data-label="月租費">1399</td><td data-label="預繳">14400</td><td data-label="傳輸量">吃到飽</td><td data-label="熱點分享">50GB</td><td data-label="方案內容">上網吃到飽不降速(熱點250G，量到降10M)｜網內110分鐘｜市話140分鐘</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tab-content"><p>中華電信新辦方案資料尚未提供，可稍後補上。</p></div>
+    <div class="tab-content">
+      <div class="subtitle">中華電信 續約 4G 門號方案</div>
+      <table>
+        <thead>
+          <tr><th>方案</th><th>預繳</th><th>傳輸量</th><th>方案內容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="方案">688(30)</td><td data-label="預繳">年資2年免預繳</td><td data-label="傳輸量">吃到飽</td><td data-label="方案內容">上網吃到飽不降速，網內前10分鐘免費，網外80分，市話160分（每個證號限定一門）</td></tr>
+          <tr><td data-label="方案">699(30)</td><td data-label="預繳">年資2年免預繳</td><td data-label="傳輸量">吃到飽</td><td data-label="方案內容">上網吃到飽不降速，網內每通前10分鐘免費＋45，網外40分，市話15分</td></tr>
+        </tbody>
+      </table>
+
+      <div class="subtitle">中華電信 續約 5G 門號方案</div>
+      <table>
+        <thead>
+          <tr><th>方案</th><th>預繳</th><th>傳輸量</th><th>熱點分享</th><th>方案內容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="方案">599(24)</td><td data-label="預繳">年資2年免預繳</td><td data-label="傳輸量">24GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前24G吃到飽不降速（含併熱點）後降4G低速吃到飽，網內前5分鐘免費｜網外30分鐘｜市話40分鐘</td></tr>
+          <tr><td data-label="方案">999(24)</td><td data-label="預繳">年資2年免預繳</td><td data-label="傳輸量">60GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前60G吃到飽不降速（含併熱點，熱點量到10m）｜網內60分鐘｜網外60分鐘｜市話75分鐘</td></tr>
+          <tr><td data-label="方案">1399(24)</td><td data-label="預繳">年資2年免預繳</td><td data-label="傳輸量">吃到飽</td><td data-label="熱點分享">50GB</td><td data-label="方案內容">熱點送50G，量到降10m｜網內110分鐘｜市話140分鐘</td></tr>
+          <tr><td data-label="方案">799(30)</td><td data-label="預繳">5593</td><td data-label="傳輸量">36GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前36G吃到飽不降速（含併熱點）後降4G低速吃到飽，網外90分鐘</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="taiwanmobile" class="carrier-content">
+    <div class="tab-content active">
+      <div class="subtitle">台灣大哥大 4G 攜碼方案</div>
+      <table>
+        <thead>
+          <tr><th>方案</th><th>預繳</th><th>傳輸量</th><th>方案內容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="方案">388(30)</td><td data-label="預繳">2793</td><td data-label="傳輸量">6GB</td><td data-label="方案內容">前6個月吃到飽，之後每月傳輸量6GB｜網內免費｜網外30分(市話另計)</td></tr>
+          <tr><td data-label="方案">688(30)</td><td data-label="預繳">4816</td><td data-label="傳輸量">吃到飽</td><td data-label="方案內容">上網吃到飽不降速，網內免費｜網外150分｜市話100分</td></tr>
+          <tr><td data-label="方案">699(30)</td><td data-label="預繳">3600</td><td data-label="傳輸量">吃到飽</td><td data-label="方案內容">上網吃到飽不降速｜網內免費｜網外200分(不含市話)</td></tr>
+          <tr><td data-label="方案">299(30)</td><td data-label="預繳">1000</td><td data-label="傳輸量">1GB</td><td data-label="方案內容">每個月傳輸量1GB｜網內前五分鐘免費｜網外30分(市話另計)</td></tr>
+          <tr><td data-label="方案">398(24)</td><td data-label="預繳">1200</td><td data-label="傳輸量">6GB</td><td data-label="方案內容">前3個月吃到飽，之後每月傳輸量6GB｜網內免費｜網外20分(市話另計)</td></tr>
+          <tr><td data-label="方案">398(30)</td><td data-label="預繳">1200</td><td data-label="傳輸量">6GB</td><td data-label="方案內容">前3個月吃到飽，之後每月傳輸量6GB｜網內免費｜網外20分(市話另計)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="subtitle">台灣大哥大 5G 攜碼方案</div>
+      <table>
+        <thead>
+          <tr><th>方案</th><th>預繳</th><th>傳輸量</th><th>熱點分享</th><th>方案內容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="方案">599(24)</td><td data-label="預繳">4193</td><td data-label="傳輸量">24GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前24G吃到飽不降速(含併熱點) 後降速4G低速吃到飽｜網內免費｜網外60分鐘</td></tr>
+          <tr><td data-label="方案">599(30)</td><td data-label="預繳">4193</td><td data-label="傳輸量">24GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前24G吃到飽不降速(含併熱點) 後降速4G低速吃到飽｜網內免費｜網外60分鐘</td></tr>
+          <tr><td data-label="方案">799(24)</td><td data-label="預繳">5593</td><td data-label="傳輸量">36GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前36G吃到飽不降速(含併熱點) 後降速4G低速吃到飽｜網內免費｜網外90分鐘</td></tr>
+          <tr><td data-label="方案">799(30)</td><td data-label="預繳">5593</td><td data-label="傳輸量">36GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前36G吃到飽不降速(含併熱點) 後降速4G低速吃到飽｜網內免費｜網外90分鐘</td></tr>
+          <tr><td data-label="方案">999(24)</td><td data-label="預繳">6993</td><td data-label="傳輸量">60GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前60G吃到飽不降速(含併熱點)，熱點量到10M後降速｜網內免費｜網外120分鐘</td></tr>
+          <tr><td data-label="方案">999(30)</td><td data-label="預繳">6993</td><td data-label="傳輸量">60GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前60G吃到飽不降速(含併熱點)，熱點量到10M後降速｜網內免費｜網外120分鐘</td></tr>
+          <tr><td data-label="方案">1199(24)</td><td data-label="預繳">8393</td><td data-label="傳輸量">100GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前100G吃到飽不降速(含併熱點)，量到降10M｜網內免費｜網外160分鐘</td></tr>
+          <tr><td data-label="方案">1199(30)</td><td data-label="預繳">8393</td><td data-label="傳輸量">60GB</td><td data-label="熱點分享">與上網傳輸量併計</td><td data-label="方案內容">前60G吃到飽不降速(含併熱點)，量到降10M｜網內免費｜網外160分鐘</td></tr>
+          <tr><td data-label="方案">1399(24)</td><td data-label="預繳">9793</td><td data-label="傳輸量">吃到飽</td><td data-label="熱點分享">50GB</td><td data-label="方案內容">上網吃到飽不降速(熱點送50G，量到降10M)｜網內免費｜網外220分鐘</td></tr>
+          <tr><td data-label="方案">1399(30)</td><td data-label="預繳">9793</td><td data-label="傳輸量">吃到飽</td><td data-label="熱點分享">50GB</td><td data-label="方案內容">上網吃到飽不降速(熱點送50G，量到降10M)｜網內免費｜網外220分鐘</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tab-content">
+      <p>台灣大哥大新辦方案資料尚未提供。</p>
+    </div>
+    <div class="tab-content">
+      <div class="subtitle">台灣大哥大 4G 續約方案</div>
+      <table>
+        <thead>
+          <tr><th>方案</th><th>預繳</th><th>傳輸量</th><th>方案內容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="方案">299(30)</td><td data-label="預繳">1000</td><td data-label="傳輸量">1GB</td><td data-label="方案內容">每個月傳輸量1GB｜網內前五分鐘免費｜網外30分(市話另計)</td></tr>
+          <tr><td data-label="方案">388(30)</td><td data-label="預繳">2793</td><td data-label="傳輸量">6GB</td><td data-label="方案內容">前6個月吃到飽，之後每月傳輸量6G｜網內免費｜網外30分(市話另計)</td></tr>
+          <tr><td data-label="方案">398(30)</td><td data-label="預繳">1200</td><td data-label="傳輸量">6GB</td><td data-label="方案內容">前3個月吃到飽，之後每月傳輸量6G｜網內免費｜網外20分(市話另計)</td></tr>
+          <tr><td data-label="方案">398(24)</td><td data-label="預繳">1200</td><td data-label="傳輸量">6GB</td><td data-label="方案內容">前3個月吃到飽，之後每月傳輸量6G｜網內免費｜網外20分(市話另計)</td></tr>
+          <tr><td data-label="方案">688(30)</td><td data-label="預繳">4816</td><td data-label="傳輸量">吃到飽</td><td data-label="方案內容">上網吃到飽不降速｜網內免費｜網外150分｜市話100分</td></tr>
+          <tr><td data-label="方案">699(30)</td><td data-label="預繳">3600</td><td data-label="傳輸量">吃到飽</td><td data-label="方案內容">上網吃到飽不降速｜網內免費｜網外200分(不含市話)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="subtitle">台灣大哥大 5G 續約方案</div>
+      <table>
+        <thead>
+          <tr><th>方案</th><th>預繳</th><th>傳輸量</th><th>熱點分享傳輸量</th><th>方案內容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="方案">599(24)</td><td data-label="預繳">4193</td><td data-label="傳輸量">24GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前24G吃到飽不降速(合併熱點)後降速4G吃到飽｜網內免費｜網外60分鐘</td></tr>
+          <tr><td data-label="方案">599(30)</td><td data-label="預繳">4193</td><td data-label="傳輸量">24GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前24G吃到飽不降速(合併熱點)後降速4G吃到飽｜網內免費｜網外60分鐘</td></tr>
+          <tr><td data-label="方案">799(24)</td><td data-label="預繳">5593</td><td data-label="傳輸量">36GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前36G吃到飽不降速(合併熱點)後降速4G吃到飽｜網內免費｜網外90分鐘</td></tr>
+          <tr><td data-label="方案">799(30)</td><td data-label="預繳">5593</td><td data-label="傳輸量">36GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前36G吃到飽不降速(合併熱點)後降速4G吃到飽｜網內免費｜網外90分鐘</td></tr>
+          <tr><td data-label="方案">999(24)</td><td data-label="預繳">6993</td><td data-label="傳輸量">60GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前60G吃到飽不降速(熱點量到10M)後降4G吃到飽｜網內免費｜網外120分鐘</td></tr>
+          <tr><td data-label="方案">999(30)</td><td data-label="預繳">6993</td><td data-label="傳輸量">60GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前60G吃到飽不降速(熱點量到10M)後降4G吃到飽｜網內免費｜網外120分鐘</td></tr>
+          <tr><td data-label="方案">1199(24)</td><td data-label="預繳">8393</td><td data-label="傳輸量">100GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前100G吃到飽不降速(合併熱點)後降4G吃到飽｜網內免費｜網外160分鐘</td></tr>
+          <tr><td data-label="方案">1199(30)</td><td data-label="預繳">8393</td><td data-label="傳輸量">60GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前60G吃到飽不降速(合併熱點)後降4G吃到飽｜網內免費｜網外160分鐘</td></tr>
+          <tr><td data-label="方案">1399(24)</td><td data-label="預繳">9793</td><td data-label="傳輸量">吃到飽</td><td data-label="熱點分享傳輸量">50GB</td><td data-label="方案內容">上網吃到飽不降速(熱點送50G，量到降10M)｜網內免費｜網外220分鐘</td></tr>
+          <tr><td data-label="方案">1399(30)</td><td data-label="預繳">9793</td><td data-label="傳輸量">吃到飽</td><td data-label="熱點分享傳輸量">50GB</td><td data-label="方案內容">上網吃到飽不降速(熱點送50G，量到降10M)｜網內免費｜網外220分鐘</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="fareastone" class="carrier-content">
+    <div class="tab-content active">
+      <div class="subtitle">遠傳電信 4G 攜碼方案</div>
+      <table>
+        <thead>
+          <tr><th>方案</th><th>預繳</th><th>傳輸量</th><th>方案內容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="方案">299(30)</td><td data-label="預繳">0</td><td data-label="傳輸量">1GB</td><td data-label="方案內容">每個月傳輸量1GB｜網內前3分鐘免費｜網外20分(市話另計)</td></tr>
+          <tr><td data-label="方案">388(30)</td><td data-label="預繳">0</td><td data-label="傳輸量">5GB</td><td data-label="方案內容">前6個月吃到飽，之後每月傳輸量5GB｜網內前3分鐘免費＋網內30分｜網外30分｜市話40分</td></tr>
+          <tr><td data-label="方案">399(24)</td><td data-label="預繳">0</td><td data-label="傳輸量">6GB</td><td data-label="方案內容">前3個月吃到飽，之後每月傳輸量6GB｜網內免費｜網外20分(市話另計)</td></tr>
+          <tr><td data-label="方案">688(30)</td><td data-label="預繳">0</td><td data-label="傳輸量">吃到飽</td><td data-label="方案內容">上網吃到飽不降速｜網內免費｜網外80分｜市話160分</td></tr>
+          <tr><td data-label="方案">699(30)</td><td data-label="預繳">0</td><td data-label="傳輸量">吃到飽</td><td data-label="方案內容">上網吃到飽不降速｜網內免費｜網外200分</td></tr>
+        </tbody>
+      </table>
+
+      <div class="subtitle">遠傳電信 5G 攜碼方案</div>
+      <table>
+        <thead>
+          <tr><th>方案</th><th>預繳</th><th>傳輸量</th><th>熱點分享傳輸量</th><th>方案內容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="方案">599(24)</td><td data-label="預繳">0</td><td data-label="傳輸量">24GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前24G吃到飽不降速(含併熱點)後降速4G低速吃到飽｜網內免費｜網外60分鐘</td></tr>
+          <tr><td data-label="方案">599(30)</td><td data-label="預繳">0</td><td data-label="傳輸量">24GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前24G吃到飽不降速(含併熱點)後降速4G低速吃到飽｜網內免費｜網外60分鐘</td></tr>
+          <tr><td data-label="方案">799(24)</td><td data-label="預繳">0</td><td data-label="傳輸量">36GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前36G吃到飽不降速(含併熱點)後降速4G低速吃到飽｜網內免費｜網外90分鐘</td></tr>
+          <tr><td data-label="方案">799(30)</td><td data-label="預繳">0</td><td data-label="傳輸量">36GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前36G吃到飽不降速(含併熱點)後降速4G低速吃到飽｜網內免費｜網外90分鐘</td></tr>
+          <tr><td data-label="方案">999(24)</td><td data-label="預繳">8000</td><td data-label="傳輸量">60GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前60G吃到飽不降速，熱點量到降10M後降4G吃到飽｜網內免費｜網外120分鐘</td></tr>
+          <tr><td data-label="方案">999(30)</td><td data-label="預繳">8000</td><td data-label="傳輸量">60GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前60G吃到飽不降速，熱點量到降10M後降4G吃到飽｜網內免費｜網外120分鐘</td></tr>
+          <tr><td data-label="方案">1199(24)</td><td data-label="預繳">12000</td><td data-label="傳輸量">100GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前100G吃到飽不降速(含併熱點，熱點量到降10M)後降4G吃到飽｜網內免費｜網外160分鐘</td></tr>
+          <tr><td data-label="方案">1199(30)</td><td data-label="預繳">12000</td><td data-label="傳輸量">100GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前100G吃到飽不降速(含併熱點，熱點量到降10M)後降4G吃到飽｜網內免費｜網外160分鐘</td></tr>
+          <tr><td data-label="方案">1399(24)</td><td data-label="預繳">14000</td><td data-label="傳輸量">吃到飽</td><td data-label="熱點分享傳輸量">50GB</td><td data-label="方案內容">上網吃到飽不降速(熱點送50G，量到降10M)｜網內免費｜網外220分鐘</td></tr>
+          <tr><td data-label="方案">1399(30)</td><td data-label="預繳">14000</td><td data-label="傳輸量">吃到飽</td><td data-label="熱點分享傳輸量">50GB</td><td data-label="方案內容">上網吃到飽不降速(熱點送50G，量到降10M)｜網內免費｜網外220分鐘</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tab-content">
+      <p>遠傳電信新辦方案資料尚未提供。</p>
+    </div>
+    <div class="tab-content">
+      <div class="subtitle">遠傳電信 4G 續約方案</div>
+      <table>
+        <thead>
+          <tr><th>方案</th><th>預繳</th><th>傳輸量</th><th>方案內容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="方案">699(30)</td><td data-label="預繳">0</td><td data-label="傳輸量">吃到飽</td><td data-label="方案內容">上網吃到飽｜網內免費｜網外200分鐘</td></tr>
+        </tbody>
+      </table>
+
+      <div class="subtitle">遠傳電信 5G 續約方案</div>
+      <table>
+        <thead>
+          <tr><th>方案</th><th>預繳</th><th>傳輸量</th><th>熱點分享傳輸量</th><th>方案內容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td data-label="方案">999(24)</td><td data-label="預繳">0</td><td data-label="傳輸量">60GB</td><td data-label="熱點分享傳輸量">與上網傳輸量併計</td><td data-label="方案內容">前60G吃到飽不降速(合併熱點，熱點量到降10M)後降4G吃到飽｜網內免費｜網外120分鐘</td></tr>
+          <tr><td data-label="方案">1399(24)</td><td data-label="預繳">0</td><td data-label="傳輸量">吃到飽</td><td data-label="熱點分享傳輸量">50GB</td><td data-label="方案內容">上網吃到飽不降速(熱點送50G，量到降10M)｜網內免費｜網外220分鐘</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tabIndex) {
+      const activeCarrierContent = document.querySelector('.carrier-content.active');
+      if (!activeCarrierContent) return;
+
+      const tabs = document.querySelectorAll('.tab');
+      const contents = activeCarrierContent.querySelectorAll('.tab-content');
+
+      tabs.forEach((tab, i) => tab.classList.toggle('active', i === tabIndex));
+
+      contents.forEach((content, i) => {
+        content.classList.toggle('active', i === tabIndex);
+      });
+    }
+
+    function switchCarrier(carrierName) {
+      const carriers = document.querySelectorAll('.carrier');
+      const carrierContents = document.querySelectorAll('.carrier-content');
+      const tabs = document.querySelectorAll('.tab');
+
+      carriers.forEach(c => c.classList.remove('active'));
+      document.querySelector(`.carrier[onclick*="'${carrierName}'"]`).classList.add('active');
+
+      carrierContents.forEach(c => c.style.display = 'none');
+      const targetCarrierContent = document.getElementById(carrierName);
+      if (targetCarrierContent) {
+        targetCarrierContent.style.display = 'block';
+        targetCarrierContent.classList.add('active');
+      }
+
+      const defaultTabIndex = 0; // 預設為攜碼，索引為 0
+      const currentCarrierTabs = targetCarrierContent.querySelectorAll('.tab-content');
+      
+      currentCarrierTabs.forEach(content => content.classList.remove('active'));
+      if (currentCarrierTabs.length > 0) {
+        currentCarrierTabs[defaultTabIndex].classList.add('active');
+      }
+      tabs.forEach((tab, i) => tab.classList.toggle('active', i === defaultTabIndex));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      switchCarrier('chunghwa');
+    });
+  </script>
+</body>
+</html>

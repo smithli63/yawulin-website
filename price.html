@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>武佶電訊｜手機價格 </title>
+  <style>
+    /* === 原樣式保留（僅在後面加上 RWD 規則，不改動內容與價格） === */
+    body { font-family: 'Helvetica Neue', sans-serif; margin: 0; padding: 0; }
+    header { background: #D00000; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; font-size: 20px; display: flex; align-items: center; }
+    header img { height: 32px; margin-right: 10px; }
+    nav a { color: white; margin: 0 10px; text-decoration: none; font-weight: bold; }
+
+    nav a.active,
+    .brand-buttons a.active,
+    .subcategory-buttons a.active {
+      background-color: blue !important;
+      color: limegreen !important;
+    }
+
+    main { padding: 20px; }
+
+    .brand-selector { margin-top: 30px; }
+
+    .brand-selector h2 { font-size: 20px; border-left: 5px solid red; padding-left: 10px; }
+
+    .brand-buttons, .subcategory-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+
+    .brand-buttons a, .subcategory-buttons a { background-color: #e60000; color: white; padding: 8px 15px; border-radius: 8px; font-weight: bold; text-decoration: none; }
+
+    .brand-buttons a:hover, .subcategory-buttons a:hover { background-color: blue; color: limegreen; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+
+    th { background-color: #D00000; color: white; text-align: left; padding: 10px; }
+
+    td { padding: 10px; border-bottom: 1px solid #ddd; }
+
+    .inquire { color: red; font-weight: bold; }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+      padding-top: 60px;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      text-align: center;
+      border-radius: 10px;
+    }
+
+    .modal-content h3 { margin-top: 0; }
+    .modal-content p { margin-bottom: 20px; }
+
+    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
+    .close:hover, .close:focus { color: black; text-decoration: none; cursor: pointer; }
+
+    #qrcode-image { width: 100%; max-width: 300px; height: auto; }
+
+    /* === 新增：收合式導覽列與表格 RWD（不變更內容） === */
+    /* 漢堡按鈕（桌機隱藏、手機顯示） */
+    .menu-toggle {
+      display: none;
+      background: transparent;
+      border: 2px solid #fff;
+      color: #fff;
+      font-size: 20px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* 讓 header 換行以容納小螢幕 */
+    header { flex-wrap: wrap; }
+
+    /* 桌機維持原樣：nav 照舊橫排顯示 */
+    nav { display: flex; align-items: center; flex-wrap: wrap; }
+
+    /* 讓表格在小螢幕可以橫向捲動（不改動任何表格內容） */
+    @media (max-width: 768px) {
+      /* 顯示漢堡按鈕、隱藏導覽列，避免擠出畫面 */
+      .menu-toggle { display: inline-block; }
+      nav { 
+        display: none;                  /* 預設收起 */
+        width: 100%;
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 8px;
+        padding: 10px 0 0 0;
+      }
+      nav.active { display: flex; }     /* 點擊漢堡按鈕後展開 */
+
+      /* 調整導覽連結的觸控區塊大小 */
+      nav a { padding: 8px 4px; margin: 0 10px; }
+
+      /* 讓任何 table 都能在小螢幕橫向滑動顯示完全 */
+      table { display: block; width: 100%; overflow-x: auto; white-space: nowrap; }
+      thead, tbody, tr, th, td { white-space: nowrap; }
+    }
+  </style>
+</head>
+
+<!-- 保留你原本 onload 初始化，不動內容 -->
+<body onload="showBrand('apple'); setActiveButton('brand-buttons', 'brand-apple'); showAppleTable('iphone')">
+  <header>
+    <h1><img src="logo.png" alt="Logo" height="32" />武佶電訊</h1>
+
+    <!-- 新增：手機用的漢堡按鈕（不影響桌機） -->
+    <button class="menu-toggle" aria-label="開關選單" onclick="document.querySelector('header nav').classList.toggle('active')">☰</button>
+
+    <!-- 原本的導覽列保留不動 -->
+    <nav>
+      <a href="index.html" id="nav-home">首頁</a>
+      <a href="phone.html" id="nav-price">手機價格</a>
+      <a href="discount.html" id="nav-discount">門號折扣</a>
+      <a href="repair.html" id="nav-repair">手機維修</a>
+      <a href="3dprint.html" id="nav-3d">3D列印服務</a>
+    </nav>
+  </header>
+
+
+    <main>
+        <section class="brand-selector">
+            <h2>請選擇品牌</h2>
+            <div class="brand-buttons">
+                <a href="#" id="brand-apple" onclick="showBrand('apple'); setActiveButton('brand-buttons', 'brand-apple')">APPLE</a>
+                <a href="#" id="brand-samsung" onclick="showBrand('samsung'); setActiveButton('brand-buttons', 'brand-samsung')">SAMSUNG</a>
+                <a href="#" id="brand-xiaomi" onclick="showBrand('xiaomi'); setActiveButton('brand-buttons', 'brand-xiaomi')">小米</a>
+                <a href="#" id="brand-oppo" onclick="showBrand('oppo'); setActiveButton('brand-buttons', 'brand-oppo')">OPPO</a>
+                <a href="#" id="brand-realme" onclick="showBrand('realme'); setActiveButton('brand-buttons', 'brand-realme')">realme</a>
+            </div>
+        </section>
+
+        <section id="apple-subcategories" class="subcategory-selector" style="display: none; margin-top: 20px;">
+            <h3>Apple 產品分類</h3>
+            <div class="subcategory-buttons">
+                <a href="#" id="apple-iphone" onclick="showAppleTable('iphone'); setActiveButton('subcategory-buttons', 'apple-iphone')">手機系列</a>
+                <a href="#" id="apple-watch" onclick="showAppleTable('watch'); setActiveButton('subcategory-buttons', 'apple-watch')">手錶系列</a>
+                <a href="#" id="apple-ipad" onclick="showAppleTable('ipad'); setActiveButton('subcategory-buttons', 'apple-ipad')">平板系列</a>
+            </div>
+        </section>
+
+        <div id="apple-iphone-table" class="product-table apple-table" style="display: none;">
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>容量</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">iPhone 16 128GB</td><td data-label="容量">128GB</td><td data-label="原價">$29,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPhone 16" data-spec="128GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPhone 16 256GB</td><td data-label="容量">256GB</td><td data-label="原價">$34,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPhone 16" data-spec="256GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPhone 16 512GB</td><td data-label="容量">512GB</td><td data-label="原價">$44,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPhone 16" data-spec="512GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPhone 16 Plus 128GB</td><td data-label="容量">128GB</td><td data-label="原價">$32,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPhone 16 Plus" data-spec="128GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPhone 16 Plus 256GB</td><td data-label="容量">256GB</td><td data-label="原價">$38,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPhone 16 Plus" data-spec="256GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPhone 16 Plus 512GB</td><td data-label="容量">512GB</td><td data-label="原價">$44,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPhone 16 Plus" data-spec="512GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPhone 16 Pro 128GB</td><td data-label="容量">128GB</td><td data-label="原價">$36,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPhone 16 Pro" data-spec="128GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPhone 16 Pro 256GB</td><td data-label="容量">256GB</td><td data-label="原價">$40,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPhone 16 Pro" data-spec="256GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPhone 16 Pro 512GB</td><td data-label="容量">512GB</td><td data-label="原價">$44,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPhone 16 Pro" data-spec="512GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPhone 16 Pro 1TB</td><td data-label="容量">1TB</td><td data-label="原價">$54,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPhone 16 Pro" data-spec="1TB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPhone 16 Pro Max 256GB</td><td data-label="容量">256GB</td><td data-label="原價">$45,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPhone 16 Pro Max" data-spec="256GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPhone 16 Pro Max 512GB</td><td data-label="容量">512GB</td><td data-label="原價">$49,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPhone 16 Pro Max" data-spec="512GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPhone 16 Pro Max 1TB</td><td data-label="容量">1TB</td><td data-label="原價">$58,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPhone 16 Pro Max" data-spec="1TB">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="apple-watch-table" class="product-table apple-table" style="display: none;">
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>尺寸</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">Apple Watch Series 10 鋁金屬 (GPS)</td><td data-label="尺寸">42mm</td><td data-label="原價">$13,500</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="Watch Series 10" data-spec="鋁金屬 (GPS), 42mm">我要詢問</td></tr>
+                    <tr><td data-label="型號">Apple Watch Series 10 鋁金屬 (LTE)</td><td data-label="尺寸">42mm</td><td data-label="原價">$16,500</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="Watch Series 10" data-spec="鋁金屬 (LTE), 42mm">我要詢問</td></tr>
+                    <tr><td data-label="型號">Apple Watch Series 10 鋁金屬 (GPS)</td><td data-label="尺寸">46mm</td><td data-label="原價">$14,500</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="Watch Series 10" data-spec="鋁金屬 (GPS), 46mm">我要詢問</td></tr>
+                    <tr><td data-label="型號">Apple Watch Series 10 鋁金屬 (LTE)</td><td data-label="尺寸">46mm</td><td data-label="原價">$17,500</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="Watch Series 10" data-spec="鋁金屬 (LTE), 46mm">我要詢問</td></tr>
+                    <tr><td data-label="型號">Apple Watch SE (GPS)(2024第二代)</td><td data-label="尺寸">40mm</td><td data-label="原價">$7,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="Watch SE (2024)" data-spec="GPS, 40mm">我要詢問</td></tr>
+                    <tr><td data-label="型號">Apple Watch SE (LTE)(2024第二代)</td><td data-label="尺寸">40mm</td><td data-label="原價">$9,400</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="Watch SE (2024)" data-spec="LTE, 40mm">我要詢問</td></tr>
+                    <tr><td data-label="型號">Apple Watch SE (GPS)(2024第二代)</td><td data-label="尺寸">44mm</td><td data-label="原價">$8,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="Watch SE (2024)" data-spec="GPS, 44mm">我要詢問</td></tr>
+                    <tr><td data-label="型號">Apple Watch SE (LTE)(2024第二代)</td><td data-label="尺寸">44mm</td><td data-label="原價">$10,400</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="Watch SE (2024)" data-spec="LTE, 44mm">我要詢問</td></tr>
+                    <tr><td data-label="型號">Apple Watch Ultra 2 鈦金屬</td><td data-label="尺寸">49mm</td><td data-label="原價">$27,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="Watch Ultra 2" data-spec="49mm">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="apple-ipad-table" class="product-table apple-table" style="display: none;">
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>容量</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">iPad mini (A17) Wi-Fi (2024 第7代)</td><td data-label="容量">128GB</td><td data-label="原價">$16,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad mini (A17)" data-spec="Wi-Fi, 128GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad mini (A17) Wi-Fi (2024 第7代)</td><td data-label="容量">256GB</td><td data-label="原價">$20,400</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad mini (A17)" data-spec="Wi-Fi, 256GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad mini (A17) Wi-Fi (2024 第7代)</td><td data-label="容量">512GB</td><td data-label="原價">$27,400</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad mini (A17)" data-spec="Wi-Fi, 512GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad mini (A17) 5G (2024 第7代)</td><td data-label="容量">128GB</td><td data-label="原價">$21,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad mini (A17)" data-spec="5G, 128GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad 11 (A16) Wi-Fi (2025 第11代)</td><td data-label="容量">128GB</td><td data-label="原價">$14,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad 11 (A16)" data-spec="Wi-Fi, 128GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad 11 (A16) 5G (2025 第11代)</td><td data-label="容量">128GB</td><td data-label="原價">$16,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad 11 (A16)" data-spec="5G, 128GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad 11 (A16) Wi-Fi (2025 第11代)</td><td data-label="容量">256GB</td><td data-label="原價">$16,400</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad 11 (A16)" data-spec="Wi-Fi, 256GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad 11 (A16) 5G (2025 第11代)</td><td data-label="容量">256GB</td><td data-label="原價">$20,400</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad 11 (A16)" data-spec="5G, 256GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad 11 (A16) Wi-Fi (2025 第11代)</td><td data-label="容量">512GB</td><td data-label="原價">$22,400</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad 11 (A16)" data-spec="Wi-Fi, 512GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad Air 11 (M3) Wi-Fi (2025 第7代)</td><td data-label="容量">128GB</td><td data-label="原價">$19,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad Air 11 (M3)" data-spec="Wi-Fi, 128GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad Air 11 (M3) Wi-Fi (2025 第7代)</td><td data-label="容量">256GB</td><td data-label="原價">$23,400</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad Air 11 (M3)" data-spec="Wi-Fi, 256GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad Air 11 (M3) Wi-Fi (2025 第7代)</td><td data-label="容量">512GB</td><td data-label="原價">$30,400</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad Air 11 (M3)" data-spec="Wi-Fi, 512GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad Air 11 (M3) Wi-Fi (2025 第7代)</td><td data-label="容量">1TB</td><td data-label="原價">$37,400</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad Air 11 (M3)" data-spec="Wi-Fi, 1TB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad Air 13 (M3) Wi-Fi (2025 第7代)</td><td data-label="容量">128GB</td><td data-label="原價">$26,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad Air 13 (M3)" data-spec="Wi-Fi, 128GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad Air 13 (M3) Wi-Fi (2025 第7代)</td><td data-label="容量">256GB</td><td data-label="原價">$30,400</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad Air 13 (M3)" data-spec="Wi-Fi, 256GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad Air 13 (M3) Wi-Fi (2025 第7代)</td><td data-label="容量">512GB</td><td data-label="原價">$37,400</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad Air 13 (M3)" data-spec="Wi-Fi, 512GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad Air 13 (M3) Wi-Fi (2025 第7代)</td><td data-label="容量">1TB</td><td data-label="原價">$44,400</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad Air 13 (M3)" data-spec="Wi-Fi, 1TB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad Pro 11 (M4) Wi-Fi (2024 第7代)</td><td data-label="容量">256GB</td><td data-label="原價">$34,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad Pro 11 (M4)" data-spec="Wi-Fi, 256GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad Pro 11 (M4) Wi-Fi (2024 第7代)</td><td data-label="容量">512GB</td><td data-label="原價">$41,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad Pro 11 (M4)" data-spec="Wi-Fi, 512GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad Pro 13 (M4) Wi-Fi (2024 第7代)</td><td data-label="容量">256GB</td><td data-label="原價">$45,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad Pro 13 (M4)" data-spec="Wi-Fi, 256GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">iPad Pro 13 (M4) Wi-Fi (2024 第7代)</td><td data-label="容量">512GB</td><td data-label="原價">$52,900</td><td data-label="優惠價" class="inquire" data-brand="Apple" data-model="iPad Pro 13 (M4)" data-spec="Wi-Fi, 512GB">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <section id="samsung-subcategories" class="subcategory-selector" style="display: none; margin-top: 20px;">
+            <h3>Samsung 產品分類</h3>
+            <div class="subcategory-buttons">
+                <a href="#" id="samsung-s-series" onclick="showSamsungTable('s-series'); setActiveButton('subcategory-buttons', 'samsung-s-series')">S系列</a>
+                <a href="#" id="samsung-a-series" onclick="showSamsungTable('a-series'); setActiveButton('subcategory-buttons', 'samsung-a-series')">A系列</a>
+                <a href="#" id="samsung-z-series" onclick="showSamsungTable('z-series'); setActiveButton('subcategory-buttons', 'samsung-z-series')">Z系列 (摺疊)</a>
+                <a href="#" id="samsung-tablets" onclick="showSamsungTable('tablets'); setActiveButton('subcategory-buttons', 'samsung-tablets')">平板系列</a>
+                <a href="#" id="samsung-watches" onclick="showSamsungTable('watches'); setActiveButton('subcategory-buttons', 'samsung-watches')">手錶系列</a>
+            </div>
+        </section>
+
+        <div id="samsung-s-series-table" class="product-table samsung-table" style="display: none;">
+            <h2>Samsung S系列手機價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">Samsung Galaxy S25 EDGE (12G/256G)</td><td data-label="原價">$37,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25 EDGE" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25 EDGE (12G/512G)</td><td data-label="原價">$44,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25 EDGE" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25 EDGE (12G/512G) (兩年保)</td><td data-label="原價">$44,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25 EDGE" data-spec="12G/512G, 兩年保">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25 (12G/256G)</td><td data-label="原價">$27,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25 (12G/256G) (兩年保)</td><td data-label="原價">$27,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25" data-spec="12G/256G, 兩年保">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25 (12G/512G)</td><td data-label="原價">$31,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25 (12G/512G) (兩年保)</td><td data-label="原價">$31,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25" data-spec="12G/512G, 兩年保">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25+ (12G/256G) (兩年保)</td><td data-label="原價">$34,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25+" data-spec="12G/256G, 兩年保">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25+ (12G/256G) (兩年保)</td><td data-label="原價">$34,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25+" data-spec="12G/256G, 兩年保">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25+ (12G/512G)</td><td data-label="原價">$38,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25+" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25+ (12G/512G) (兩年保)</td><td data-label="原價">$38,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25+" data-spec="12G/512G, 兩年保">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25 Ultra (12G/256G)</td><td data-label="原價">$43,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25 Ultra" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25 Ultra (12G/256G) (兩年保)</td><td data-label="原價">$43,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25 Ultra" data-spec="12G/256G, 兩年保">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25 Ultra (12G/512G)</td><td data-label="原價">$47,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25 Ultra" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25 Ultra (12G/512G) (兩年保)</td><td data-label="原價">$47,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25 Ultra" data-spec="12G/512G, 兩年保">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25 Ultra (16G/1T)</td><td data-label="原價">$56,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25 Ultra" data-spec="16G/1T">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S25 Ultra (16G/1T) (兩年保)</td><td data-label="原價">$56,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S25 Ultra" data-spec="16G/1T, 兩年保">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S24 FE (8G/256G)</td><td data-label="原價">$22,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S24 FE" data-spec="8G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy S24 FE (8G/256G) (兩年保)</td><td data-label="原價">$22,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy S24 FE" data-spec="8G/256G, 兩年保">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung S24 (8G/256G)</td><td data-label="原價">$27,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="S24" data-spec="8G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung S24 (8G/256G) (兩年保)</td><td data-label="原價">$27,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="S24" data-spec="8G/256G, 兩年保">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung S24 (8G/512G)</td><td data-label="原價">$34,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="S24" data-spec="8G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung S24 (8G/512G) (兩年保)</td><td data-label="原價">$34,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="S24" data-spec="8G/512G, 兩年保">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung S24+ (12G/256G)</td><td data-label="原價">$34,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="S24+" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung S24+ (12G/256G) (兩年保)</td><td data-label="原價">$34,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="S24+" data-spec="12G/256G, 兩年保">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung S24+ (12G/512G)</td><td data-label="原價">$38,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="S24+" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung S24+ (12G/512G) (兩年保)</td><td data-label="原價">$38,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="S24+" data-spec="12G/512G, 兩年保">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung S24 Ultra (12G/256G)</td><td data-label="原價">$43,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="S24 Ultra" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung S24 Ultra (12G/256G) (兩年保)</td><td data-label="原價">$43,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="S24 Ultra" data-spec="12G/256G, 兩年保">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="samsung-a-series-table" class="product-table samsung-table" style="display: none;">
+            <h2>Samsung A系列手機價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">Samsung A56 (8G/256G)</td><td data-label="原價">$16,990</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="A56" data-spec="8G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung A56 (12G/256G)</td><td data-label="原價">$17,990</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="A56" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung A36 (8G/128G)</td><td data-label="原價">$13,990</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="A36" data-spec="8G/128G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung A36 (8G/256G)</td><td data-label="原價">$14,990</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="A36" data-spec="8G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung A26 (8G/128G)</td><td data-label="原價">$11,990</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="A26" data-spec="8G/128G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung A16 (4G/128GB)</td><td data-label="原價">$7,490</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="A16" data-spec="4G/128GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung A16 (6G/128GB)</td><td data-label="原價">$8,490</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="A16" data-spec="6G/128GB">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="samsung-z-series-table" class="product-table samsung-table" style="display: none;">
+            <h2>Samsung Z系列 (摺疊) 手機價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>定價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">Samsung Z Flip7 (12G/256G)</td><td data-label="定價">$35,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Z Flip7" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Z Flip7 (12G/512G)</td><td data-label="定價">$39,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Z Flip7" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Z Flip6 (12G/256G)《原廠保固一年》</td><td data-label="定價">$35,888</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Z Flip6" data-spec="12G/256G, 原廠保固一年">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Z Flip6 (12G/256G)《原廠保固二年》</td><td data-label="定價">$35,888</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Z Flip6" data-spec="12G/256G, 原廠保固二年">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Z Flip6 (12G/512G)《原廠保固一年》</td><td data-label="定價">$39,888</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Z Flip6" data-spec="12G/512G, 原廠保固一年">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Z Flip6 (12G/512G)《原廠保固二年》</td><td data-label="定價">$39,888</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Z Flip6" data-spec="12G/512G, 原廠保固二年">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Z Fold7 (12G/256G)</td><td data-label="定價">$62,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Z Fold7" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Z Fold7 (12G/512G)</td><td data-label="定價">$66,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Z Fold7" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Z Fold7 (16G/1T)</td><td data-label="定價">$75,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Z Fold7" data-spec="16G/1T">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Z Fold6 (12G/256G)《原廠保固一年》</td><td data-label="定價">$59,888</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Z Fold6" data-spec="12G/256G, 原廠保固一年">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Z Fold6 (12G/256G)《原廠保固兩年》</td><td data-label="定價">$59,888</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Z Fold6" data-spec="12G/256G, 原廠保固兩年">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Z Fold6 (12G/512G)《原廠保固一年》</td><td data-label="定價">$63,888</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Z Fold6" data-spec="12G/512G, 原廠保固一年">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Z Fold6 (12G/512G)《原廠保固兩年》</td><td data-label="定價">$63,888</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Z Fold6" data-spec="12G/512G, 原廠保固兩年">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="samsung-tablets-table" class="product-table samsung-table" style="display: none;">
+            <h2>Samsung 平板系列價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>定價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">Samsung Galaxy Tab A9 (4G/64G) Wi-Fi (X110)</td><td data-label="定價">$6,490</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy Tab A9" data-spec="4G/64G, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy Tab A9 (4G/64G) LTE (X115)</td><td data-label="定價">$6,490</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy Tab A9" data-spec="4G/64G, LTE">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy Tab A9+ (4G/64G) Wi-Fi (X210)</td><td data-label="定價">$6,990</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy Tab A9+" data-spec="4G/64G, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy Tab A9+ (8G/128G) Wi-Fi (X210)</td><td data-label="定價">$8,490</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy Tab A9+" data-spec="8G/128G, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Galaxy Tab A9+ (4G/64G) 5G (X216)</td><td data-label="定價">$9,490</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy Tab A9+" data-spec="4G/64G, 5G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Tab S10 FE (8G/128G) Wi-Fi (X520)</td><td data-label="定價">$13,990</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Tab S10 FE" data-spec="8G/128G, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Tab S10 FE (12G/256G) Wi-Fi (X520)</td><td data-label="定價">$16,990</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Tab S10 FE" data-spec="12G/256G, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Tab S10 FE+ (8G/128G) Wi-Fi (X620)</td><td data-label="定價">$21,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Tab S10 FE+" data-spec="8G/128G, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Tab S10 FE+ (12G/256G) Wi-Fi (X620)</td><td data-label="定價">$24,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Tab S10 FE+" data-spec="12G/256G, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Tab S10+ (12G/256G) Wi-Fi (SM-X820)</td><td data-label="定價">$32,990</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Tab S10+" data-spec="12G/256G, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Tab S10+ (12G/512G) Wi-Fi (SM-X820)</td><td data-label="定價">$36,990</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Tab S10+" data-spec="12G/512G, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Tab S10 Ultra (12G/256G) Wi-Fi (SM-X920)</td><td data-label="定價">$39,990</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Tab S10 Ultra" data-spec="12G/256G, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung Tab S10 Ultra (12G/512G) Wi-Fi (SM-X920)</td><td data-label="定價">$48,990</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Tab S10 Ultra" data-spec="12G/512G, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung S9 FE (6G/128G) 5G (X516)</td><td data-label="定價">$17,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="S9 FE" data-spec="6G/128G, 5G">我要詢問</td></tr>
+                    <tr><td data-label="型號">Samsung S9 FE (8G/256G) Wi-Fi (X510)</td><td data-label="定價">$15,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="S9 FE" data-spec="8G/256G, Wi-Fi">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="samsung-watches-table" class="product-table samsung-table" style="display: none;">
+            <h2>Samsung 手錶系列價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>定價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">Samsung Galaxy Watch Ultra (SM-L705FZB1BRI)(2025)</td><td data-label="定價">$24,900</td><td data-label="優惠價" class="inquire" data-brand="Samsung" data-model="Galaxy Watch Ultra" data-spec="(SM-L705FZB1BRI)">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <section id="xiaomi-subcategories" class="subcategory-selector" style="display: none; margin-top: 20px;">
+            <h3>小米 產品分類</h3>
+            <div class="subcategory-buttons">
+                <a href="#" id="xiaomi-phone" onclick="showXiaomiTable('phone'); setActiveButton('subcategory-buttons', 'xiaomi-phone')">小米手機系列</a>
+                <a href="#" id="xiaomi-redmi" onclick="showXiaomiTable('redmi'); setActiveButton('subcategory-buttons', 'xiaomi-redmi')">紅米系列</a>
+                <a href="#" id="xiaomi-redmi-note" onclick="showXiaomiTable('redmi-note'); setActiveButton('subcategory-buttons', 'xiaomi-redmi-note')">紅米Note系列</a>
+                <a href="#" id="xiaomi-tablets" onclick="showXiaomiTable('tablets'); setActiveButton('subcategory-buttons', 'xiaomi-tablets')">小米平板系列</a>
+                <a href="#" id="xiaomi-redmi-tablets" onclick="showXiaomiTable('redmi-tablets'); setActiveButton('subcategory-buttons', 'xiaomi-redmi-tablets')">紅米平板系列</a>
+                <a href="#" id="xiaomi-wearables" onclick="showXiaomiTable('wearables'); setActiveButton('subcategory-buttons', 'xiaomi-wearables')">穿戴裝置</a>
+            </div>
+        </section>
+
+        <div id="xiaomi-phone-table" class="product-table xiaomi-table" style="display: none;">
+            <h2>小米手機價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">小米 15 (12G/256G)</td><td data-label="原價">$22,999</td><td data-label="優惠價" class="inquire" data-brand="小米" data-model="小米 15" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">小米 15 (12G/512G)</td><td data-label="原價">$24,999</td><td data-label="優惠價" class="inquire" data-brand="小米" data-model="小米 15" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">小米 15 Ultra (16G/512G)</td><td data-label="原價">$34,999</td><td data-label="優惠價" class="inquire" data-brand="小米" data-model="小米 15 Ultra" data-spec="16G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">小米 15 Ultra (16G/1T)</td><td data-label="原價">$37,999</td><td data-label="優惠價" class="inquire" data-brand="小米" data-model="小米 15 Ultra" data-spec="16G/1T">我要詢問</td></tr>
+                    <tr><td data-label="型號">小米 14T (12G/512G)</td><td data-label="原價">$14,999</td><td data-label="優惠價" class="inquire" data-brand="小米" data-model="小米 14T" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">小米 14T Pro (12G/512G)</td><td data-label="原價">$17,999</td><td data-label="優惠價" class="inquire" data-brand="小米" data-model="小米 14T Pro" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">小米 14T Pro (12G/1T)</td><td data-label="原價">$19,999</td><td data-label="優惠價" class="inquire" data-brand="小米" data-model="小米 14T Pro" data-spec="12G/1T">我要詢問</td></tr>
+                    <tr><td data-label="型號">小米 14 (12G/512G)</td><td data-label="原價">$24,999</td><td data-label="優惠價" class="inquire" data-brand="小米" data-model="小米 14" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">小米 14 Ultra (16G/512G)</td><td data-label="原價">$34,999</td><td data-label="優惠價" class="inquire" data-brand="小米" data-model="小米 14 Ultra" data-spec="16G/512G">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="xiaomi-redmi-table" class="product-table xiaomi-table" style="display: none;">
+            <h2>紅米系列手機價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">紅米 14 C (4G/128G)</td><td data-label="原價">$4,499</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="紅米 14 C" data-spec="4G/128G">我要詢問</td></tr>
+                    <tr><td data-label="型號">紅米 14 C (8G/256G)</td><td data-label="原價">$5,499</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="紅米 14 C" data-spec="8G/256G">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="xiaomi-redmi-note-table" class="product-table xiaomi-table" style="display: none;">
+            <h2>紅米Note系列手機價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">紅米 Note 14 (6G/128G) 5G</td><td data-label="原價">$7,999</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="Note 14" data-spec="6G/128G, 5G">我要詢問</td></tr>
+                    <tr><td data-label="型號">紅米 Note 14 (8G/256G) 5G</td><td data-label="原價">$8,999</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="Note 14" data-spec="8G/256G, 5G">我要詢問</td></tr>
+                    <tr><td data-label="型號">紅米 Note 14 Pro (12G/256G)</td><td data-label="原價">$9,999</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="Note 14 Pro" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">紅米 Note 14 Pro+ (12G/256G)</td><td data-label="原價">$11,999</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="Note 14 Pro+" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">紅米 Note 13 Pro (8G/256G)</td><td data-label="原價">$9,499</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="Note 13 Pro" data-spec="8G/256G">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="xiaomi-tablets-table" class="product-table xiaomi-table" style="display: none;">
+            <h2>小米平板價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">小米 平板 Pad 7 (8G/128G)</td><td data-label="原價">$9,190</td><td data-label="優惠價" class="inquire" data-brand="小米" data-model="平板 Pad 7" data-spec="8G/128G">我要詢問</td></tr>
+                    <tr><td data-label="型號">小米 平板 Pad 7 (12G/256G)</td><td data-label="原價">$14,990</td><td data-label="優惠價" class="inquire" data-brand="小米" data-model="平板 Pad 7" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">小米 平板 Pad 7 Pro (8G/256G)</td><td data-label="原價">$13,790</td><td data-label="優惠價" class="inquire" data-brand="小米" data-model="平板 Pad 7 Pro" data-spec="8G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">小米 平板 Pad 7 Pro (12G/512G)</td><td data-label="原價">$16,590</td><td data-label="優惠價" class="inquire" data-brand="小米" data-model="平板 Pad 7 Pro" data-spec="12G/512G">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="xiaomi-redmi-tablets-table" class="product-table xiaomi-table" style="display: none;">
+            <h2>紅米平板系列價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">紅米 平板 Pad 2 (4GB/128GB) Wi-Fi</td><td data-label="原價">$4,999</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="平板 Pad 2" data-spec="4GB/128GB, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">紅米 平板 Pad 2 (8GB/256GB) Wi-Fi</td><td data-label="原價">$6,999</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="平板 Pad 2" data-spec="8GB/256GB, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">紅米 平板 SE 8.7 (4G/64G) Wi-Fi</td><td data-label="原價">$2,999</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="平板 SE 8.7" data-spec="4G/64G, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">紅米 平板 SE 8.7 (4G/128G) Wi-Fi</td><td data-label="原價">$4,699</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="平板 SE 8.7" data-spec="4G/128G, Wi-Fi">我要詢問</td></tr>
+                    <tr><td data-label="型號">紅米 平板 SE 8.7 (6G/128G) LTE</td><td data-label="原價">$4,699</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="平板 SE 8.7" data-spec="6G/128G, LTE">我要詢問</td></tr>
+                    <tr><td data-label="型號">紅米 平板 Pro (8G/256G)</td><td data-label="原價">$8,999</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="平板 Pro" data-spec="8G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">紅米 平板 SE (4G/128G)</td><td data-label="原價">$5,999</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="平板 SE" data-spec="4G/128G">我要詢問</td></tr>
+                    <tr><td data-label="型號">紅米 平板 SE (8G/256G)</td><td data-label="原價">$7,999</td><td data-label="優惠價" class="inquire" data-brand="紅米" data-model="平板 SE" data-spec="8G/256G">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="xiaomi-wearables-table" class="product-table xiaomi-table" style="display: none;">
+            <h2>小米穿戴裝置價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">小米穿戴裝置型號1</td><td data-label="原價">$XXXXX</td><td data-label="優惠價" class="inquire" data-brand="小米" data-model="穿戴裝置" data-spec="型號1">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <section id="oppo-subcategories" class="subcategory-selector" style="display: none; margin-top: 20px;">
+            <h3>OPPO 產品分類</h3>
+            <div class="subcategory-buttons">
+                <a href="#" id="oppo-reno-series" onclick="showOppoTable('reno-series'); setActiveButton('subcategory-buttons', 'oppo-reno-series')">RENO系列</a>
+                <a href="#" id="oppo-a-series" onclick="showOppoTable('a-series'); setActiveButton('subcategory-buttons', 'oppo-a-series')">A系列</a>
+                <a href="#" id="oppo-find-series" onclick="showOppoTable('find-series'); setActiveButton('subcategory-buttons', 'oppo-find-series')">Find系列</a>
+                <a href="#" id="oppo-tablets" onclick="showOppoTable('tablets'); setActiveButton('subcategory-buttons', 'oppo-tablets')">平板系列</a>
+                <a href="#" id="oppo-wearables" onclick="showOppoTable('wearables'); setActiveButton('subcategory-buttons', 'oppo-wearables')">穿戴裝置</a>
+            </div>
+        </section>
+
+        <div id="oppo-reno-series-table" class="product-table oppo-table" style="display: none;">
+            <h2>OPPO RENO系列手機價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">OPPO Reno14 (12G/256G)</td><td data-label="原價">$17,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Reno14" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Reno14 (12G/512G)</td><td data-label="原價">$19,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Reno14" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Reno14 F (8G/256G)</td><td data-label="原價">$12,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Reno14 F" data-spec="8G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Reno14 F (12G/256G)</td><td data-label="原價">$13,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Reno14 F" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Reno14 Pro (12G/512G)</td><td data-label="原價">$23,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Reno14 Pro" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Reno13 (12G/256G)</td><td data-label="原價">$17,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Reno13" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Reno13 (12G/512G)</td><td data-label="原價">$19,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Reno13" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Reno13 F (8G/256G)</td><td data-label="原價">$12,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Reno13 F" data-spec="8G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Reno13 F (12G/256G)</td><td data-label="原價">$13,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Reno13 F" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Reno13 Pro (12G/512G)</td><td data-label="原價">$23,900</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Reno13 Pro" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Reno12 F (12G/256G)</td><td data-label="原價">$12,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Reno12 F" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Reno12 Pro (12G/512G)</td><td data-label="原價">$17,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Reno12 Pro" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Reno10 Pro+ (12G/256G)</td><td data-label="原價">$24,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Reno10 Pro+" data-spec="12G/256G">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="oppo-a-series-table" class="product-table oppo-table" style="display: none;">
+            <h2>OPPO A系列手機價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">OPPO A5 5G (4G/128G)</td><td data-label="原價">$6,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="A5 5G" data-spec="4G/128G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO A5 Pro (6G/128G)</td><td data-label="原價">$7,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="A5 Pro" data-spec="6G/128G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO A5 Pro (8G/256G)</td><td data-label="原價">$9,490</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="A5 Pro" data-spec="8G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO A3x (4G/128G)</td><td data-label="原價">$4,490</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="A3x" data-spec="4G/128G">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="oppo-find-series-table" class="product-table oppo-table" style="display: none;">
+            <h2>OPPO Find系列手機價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">OPPO Find X8 (12G/256G)</td><td data-label="原價">$27,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Find X8" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Find X8 Pro (16G/512G)</td><td data-label="原價">$37,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Find X8 Pro" data-spec="16G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Find N3 (16G/512G)</td><td data-label="原價">$60,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Find N3" data-spec="16G/512G">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="oppo-tablets-table" class="product-table oppo-table" style="display: none;">
+            <h2>OPPO 平板系列價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">OPPO Pad Air (4G/64G)</td><td data-label="原價">$8,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Pad Air" data-spec="4G/64G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Pad Neo (6G/128G)</td><td data-label="原價">$8,990</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Pad Neo" data-spec="6G/128G">我要詢問</td></tr>
+                    <tr><td data-label="型號">OPPO Pad SE (4G/128G)</td><td data-label="原價">$6,490</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="Pad SE" data-spec="4G/128G">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="oppo-wearables-table" class="product-table oppo-table" style="display: none;">
+            <h2>OPPO 穿戴裝置價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">OPPO穿戴裝置型號1</td><td data-label="原價">$XXXXX</td><td data-label="優惠價" class="inquire" data-brand="OPPO" data-model="穿戴裝置" data-spec="型號1">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <section id="realme-subcategories" class="subcategory-selector" style="display: none; margin-top: 20px;">
+            <h3>realme 產品分類</h3>
+            <div class="subcategory-buttons">
+                <a href="#" id="realme-phone" onclick="showRealmeTable('phone'); setActiveButton('subcategory-buttons', 'realme-phone')">手機系列</a>
+                <a href="#" id="realme-aiot" onclick="showRealmeTable('aiot'); setActiveButton('subcategory-buttons', 'realme-aiot')">AIoT 智慧潮玩</a>
+            </div>
+        </section>
+
+        <div id="realme-phone-table" class="product-table realme-table" style="display: none;">
+            <h2>realme 手機價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>定價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">realme 14 (8G/256G)</td><td data-label="定價">$11,990</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="14" data-spec="8G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">realme 14 Pro (12G/256G)</td><td data-label="定價">$14,990</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="14 Pro" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">realme 14x (6G/128G)</td><td data-label="定價">$6,490</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="14x" data-spec="6G/128G">我要詢問</td></tr>
+                    <tr><td data-label="型號">realme 14x (8G/256G)</td><td data-label="定價">$7,990</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="14x" data-spec="8G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">realme 13 (8G/256G)</td><td data-label="定價">$8,990</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="13" data-spec="8G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">realme 13+ (12G/256G)</td><td data-label="定價">$11,990</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="13+" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">realme 13 Pro (12G/256G)</td><td data-label="定價">$13,990</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="13 Pro" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">realme 13 Pro+ (12G/512G)</td><td data-label="定價">$16,990</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="13 Pro+" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">realme 10T (4G/128GB)</td><td data-label="定價">$7,490</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="10T" data-spec="4G/128GB">我要詢問</td></tr>
+                    <tr><td data-label="型號">realme C71 (4G/128G)</td><td data-label="定價">$4,490</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="C71" data-spec="4G/128G">我要詢問</td></tr>
+                    <tr><td data-label="型號">realme C61 (4G/128G)</td><td data-label="定價">$3,990</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="C61" data-spec="4G/128G">我要詢問</td></tr>
+                    <tr><td data-label="型號">realme GT 7T (12G/256G)</td><td data-label="定價">$19,990</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="GT 7T" data-spec="12G/256G">我要詢問</td></tr>
+                    <tr><td data-label="型號">realme GT 7 (12G/512G)</td><td data-label="定價">$21,990</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="GT 7" data-spec="12G/512G">我要詢問</td></tr>
+                    <tr><td data-label="型號">realme GT 7 Pro (12G/512G)</td><td data-label="定價">$28,990</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="GT 7 Pro" data-spec="12G/512G">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="realme-aiot-table" class="product-table realme-table" style="display: none;">
+            <h2>realme AIoT 智慧潮玩價格</h2>
+            <table>
+                <thead>
+                    <tr><th>型號</th><th>原價</th><th>優惠價</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="型號">realme AIoT 裝置型號1</td><td data-label="原價">$XXXXX</td><td data-label="優惠價" class="inquire" data-brand="realme" data-model="AIoT 智慧潮玩" data-spec="裝置型號1">我要詢問</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="qrCodeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3 id="modal-title"></h3>
+            <p>請掃描以下 QR Code 以加入 LINE 好友並進行詢問</p>
+            <img id="qrcode-image" src="" alt="LINE QR Code">
+        </div>
+    </div>
+
+    <script>
+        // 取得所有子分類按鈕群組
+        function setActiveButton(groupClass, activeId) {
+            document.querySelectorAll(`.${groupClass} a`).forEach(btn => btn.classList.remove('active'));
+            const btn = document.getElementById(activeId);
+            if (btn) btn.classList.add('active');
+        }
+
+        // 隱藏所有產品分類區塊和表格
+        function hideAllSectionsAndTables() {
+            document.querySelectorAll('.subcategory-selector').forEach(sec => sec.style.display = 'none');
+            document.querySelectorAll('.product-table').forEach(table => table.style.display = 'none');
+        }
+
+        // 顯示對應品牌的子分類和預設表格
+        function showBrand(brand) {
+            hideAllSectionsAndTables();
+            const subcategorySelector = document.getElementById(`${brand}-subcategories`);
+            if (subcategorySelector) {
+                subcategorySelector.style.display = 'block';
+                const defaultTable = document.querySelector(`#${brand}-subcategories .subcategory-buttons a`);
+                if (defaultTable) {
+                    const type = defaultTable.id.replace(`${brand}-`, '');
+                    const functionName = `show${brand.charAt(0).toUpperCase() + brand.slice(1)}Table`;
+                    if (window[functionName]) {
+                        window[functionName](type);
+                    }
+                    setActiveButton('subcategory-buttons', defaultTable.id);
+                }
+            }
+        }
+
+        // 顯示 Apple 品牌下的特定產品表格
+        function showAppleTable(type) {
+            document.querySelectorAll('.apple-table').forEach(table => table.style.display = 'none');
+            document.getElementById(`apple-${type}-table`).style.display = 'block';
+        }
+
+        // 顯示 Samsung 品牌下的特定產品表格
+        function showSamsungTable(type) {
+            document.querySelectorAll('.samsung-table').forEach(table => table.style.display = 'none');
+            document.getElementById(`samsung-${type}-table`).style.display = 'block';
+        }
+
+        // 顯示 Xiaomi 品牌下的特定產品表格
+        function showXiaomiTable(type) {
+            document.querySelectorAll('.xiaomi-table').forEach(table => table.style.display = 'none');
+            document.getElementById(`xiaomi-${type}-table`).style.display = 'block';
+        }
+
+        // 顯示 OPPO 品牌下的特定產品表格
+        function showOppoTable(type) {
+            document.querySelectorAll('.oppo-table').forEach(table => table.style.display = 'none');
+            document.getElementById(`oppo-${type}-table`).style.display = 'block';
+        }
+
+        // 顯示 realme 品牌下的特定產品表格
+        function showRealmeTable(type) {
+            document.querySelectorAll('.realme-table').forEach(table => table.style.display = 'none');
+            document.getElementById(`realme-${type}-table`).style.display = 'block';
+        }
+
+        // Modal 彈出視窗控制
+        const modal = document.getElementById("qrCodeModal");
+        const qrImage = document.getElementById("qrcode-image");
+        const modalTitle = document.getElementById("modal-title");
+        const lineID = 'fc0880045';
+
+        // 關閉 Modal
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        // 點擊 Modal 外部區域時關閉
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 網頁載入時預設顯示 Apple 手機頁面
+            showBrand('apple');  
+            setActiveButton('brand-buttons', 'brand-apple');  
+            showAppleTable('iphone');
+
+            // 處理所有「我要詢問」點擊事件
+            const inquireCells = document.querySelectorAll('.inquire');
+            
+            inquireCells.forEach(cell => {
+                cell.style.cursor = 'pointer';
+                cell.onclick = (event) => {
+                    event.preventDefault(); // 防止預設連結行為
+                    
+                    const brand = cell.dataset.brand || '未指定品牌';
+                    const model = cell.dataset.model || '未指定型號';
+                    const spec = cell.dataset.spec || '未指定規格';
+                    
+                    // 訊息內容
+                    const message = `你好，我想詢問 ${brand} 的 ${model} (${spec}) 優惠價。`;
+                    const encodedMessage = encodeURIComponent(message);
+                    
+                    // 產生 LINE 聊天室連結
+                    const lineURL = `https://line.me/ti/p/@${lineID}?text=${encodedMessage}`;
+
+                    // 產生 QR Code 圖片網址
+                    const qrCodeAPI = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(lineURL)}`;
+                    
+                    // 更新 Modal 內容並顯示
+                    modalTitle.textContent = `${brand} ${model} 詢問`;
+                    qrImage.src = qrCodeAPI;
+                    modal.style.display = "block";
+                };
+            });
+        });
+    </script>
+</body>
+</html>

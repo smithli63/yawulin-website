@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>武造工坊｜3D列印服務</title>
+  <style>
+    body { font-family: 'Helvetica Neue', sans-serif; margin: 0; padding: 0; background: #fff; }
+    
+    header { 
+      background: #D00000; 
+      color: white; 
+      padding: 20px;
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      flex-wrap: wrap; /* 讓導覽列在小螢幕自動換行 */
+    }
+    header h1 { 
+      margin: 0; 
+      font-size: 28px; 
+      display: flex; 
+      align-items: center; 
+    }
+    header h1 img { height: 48px; margin-right: 15px; }
+    header nav { 
+      display: flex; 
+      flex-wrap: wrap; 
+      justify-content: center;
+      margin-top: 10px;
+    }
+    header nav a { 
+      color: white; 
+      margin: 0 10px; 
+      text-decoration: none; 
+      font-weight: bold; 
+      font-size: 16px; /* 調整字體大小，在手機上更合適 */
+    }
+
+    .hero {
+      background: url('3dbanner01.png') center/cover no-repeat;
+      color: white;
+      padding: 60px 20px;
+      text-align: center;
+      font-size: 28px;
+    }
+
+    section { padding: 20px; max-width: 1000px; margin: auto; }
+    h2 { color: #d00000; margin-top: 20px; } /* 標題顏色 */
+    .service-table, .price-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    
+    /* 寬螢幕下的表格樣式 (電腦版) */
+    .service-table th, .service-table td,
+    .price-table th, .price-table td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    .price-table th { background: #d00000; color: white; }
+    
+    .highlight-box { background: #f9f9f9; padding: 15px; margin-top: 20px; border-left: 4px solid #d00000; }
+    .steps ol { padding-left: 20px; }
+    .line-icon { position: fixed; bottom: 20px; right: 20px; width: 50px; z-index: 1000; } /* 確保圖示在最上層 */
+    .sample-images {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .sample-images img {
+      width: 100%;
+      max-width: 220px; /* 限制圖片最大寬度 */
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      height: auto; /* 保持圖片比例 */
+    }
+
+    footer { background: #eee; text-align: center; padding: 10px; font-size: 14px; }
+    
+    /* --- 響應式 CSS (手機版) --- */
+    @media (max-width: 768px) {
+      header { flex-direction: column; text-align: center; }
+      header nav { margin-top: 15px; gap: 5px; }
+      header nav a { font-size: 14px; margin: 0 5px; }
+
+      .hero h1 { font-size: 24px; }
+      .hero p { font-size: 18px; }
+      
+      /* 將表格轉換為直向的卡片樣式 */
+      .service-table, .price-table { border: 0; }
+      .service-table thead, .price-table thead { display: none; } /* 在手機上隱藏表頭 */
+      .service-table tr, .price-table tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .service-table td, .price-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 10px;
+        border-bottom: 1px solid #eee;
+      }
+      .service-table td:before, .price-table td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #555;
+        min-width: 80px;
+      }
+      .service-table td:first-of-type, .price-table td:first-of-type { border-top-left-radius: 5px; border-top-right-radius: 5px; }
+      .service-table td:last-of-type, .price-table td:last-of-type { border-bottom: 0; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><img src="wuzao-logo.png" alt="武佶電訊 Logo">武造工坊</h1>
+    <nav>
+      <a href="company.html">公司首頁</a>
+      <a href="5gindex.html">武佶電訊</a>
+      <a href="pork.html">波客鹹豬肉</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>專業3D列印服務</h1>
+    <p>從構想到實體，協助您快速完成客製化模型製作</p>
+  </section>
+
+  <section>
+    <h2>我們提供的服務</h2>
+    <table class="service-table">
+      <thead>
+        <tr><th>服務名稱</th><th>說明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td data-label="服務名稱">客製3D列印</td><td data-label="說明">提供FDM與光固化列印，支援ABS/PLA/TPU等材料</td></tr>
+        <tr><td data-label="服務名稱">基礎3D建模</td><td data-label="說明">根據草圖或想法建模，轉換為可列印格式</td></tr>
+        <tr><td data-label="服務名稱">3D掃描</td><td data-label="說明">使用工業及藍光掃描儀，掃描實體物件並轉STL格式</td></tr>
+        <tr><td data-label="服務名稱">快速交件</td><td data-label="說明">一般件2~3天完工，急件可特快處理</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>常見應用情境</h2>
+    <div class="highlight-box">
+      🔧 工業零件樣品製作<br>
+      🎮 模型/玩具原型製作<br>
+      💡 專題報告展示<br>
+      🧩 斷裂配件替換件製作<br>
+      🎁 客製禮物/裝飾品<br>
+      🚗 汽機車零件修補<br>
+      🛠️ 停產零件複製
+    </div>
+  </section>
+
+  <section>
+    <h2>服務價格區間</h2>
+    <table class="price-table">
+      <thead>
+        <tr><th>項目</th><th>價格（起）</th><th>說明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td data-label="項目">FDM列印（單色）</td><td data-label="價格（起）">$100</td><td data-label="說明">依大小與材質報價</td></tr>
+        <tr><td data-label="項目">光固化列印（高精度）</td><td data-label="價格（起）">$150</td><td data-label="說明">適合精密件</td></tr>
+        <tr><td data-label="項目">3D建模</td><td data-label="價格（起）">$800</td><td data-label="說明">依複雜度報價</td></tr>
+        <tr><td data-label="項目">3D掃描</td><td data-label="價格（起）">$1000</td><td data-label="說明">掃描＋基本STL匯出（不包含CAD）</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:10px; font-size:15px; color:#555;">
+      ※ 以上價格為基本起價範圍，實際費用將依作品尺寸、精度要求、材質選擇及後處理需求而異。<br>
+      為確保報價準確，<strong>建議先透過LINE或下單表單與我們聯繫，詳談需求後再進行報價</strong>。
+    </p>
+  </section>
+
+  <section>
+    <h2>樣品作品展示區</h2>
+    <div class="sample-images">
+      <img src="sample01.jpg" alt="樣品作品1">
+      <img src="sample02.jpg" alt="樣品作品2">
+      </div>
+    <p style="font-size:14px; color:#777; margin-top:10px; text-align: center;">※ 若欲查看更多樣品作品，歡迎來訊索取相關案例。</p>
+  </section>
+
+  <section>
+    <h2>付款與寄送方式</h2>
+    <div style="padding: 15px; background: #f9f9f9; border-left: 4px solid #d00000;">
+      <p style="color: #777;">（此區塊內容待補，您可於此處說明匯款方式、提供付款 QR Code、或是寄送物流的合作方式。）</p>
+    </div>
+  </section>
+
+  <section class="steps">
+    <h2>合作流程</h2>
+    <ol>
+      <li>填寫需求表單或加LINE</li>
+      <li>提供檔案或照片</li>
+      <li>報價並確認</li>
+      <li>製作進行中（平均2~3天）</li>
+      <li>完工寄出或門市取件</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>聯絡方式</h2>
+    <p>📍 地址：台中市西屯區西屯路二段35-3號</p>
+    <p>📞 電話：0965114241  04-2311-9599</p>
+    <p>💬 LINE：<a href="#">點此加入官方LINE</a></p>
+    <p>📩 客製下單表單：<a href="#">點此填寫</a></p>
+  </section>
+
+  <a href="#">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" alt="Line聯繫" class="line-icon">
+  </a>
+
+  <footer>
+    &copy; 2025 武佶電訊｜台中市西屯區 | 版權所有
+  </footer>
+</body>
+</html>
